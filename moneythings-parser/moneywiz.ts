@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import Papa from 'papaparse';
-import { convertCurrencyStringToNumber } from './utils';
+import { convertCurrencyStringToNumber } from '../utils/utils';
 
 interface OldCsvRow {
   当前余额: string;

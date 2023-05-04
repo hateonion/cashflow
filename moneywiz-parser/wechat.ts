@@ -1,6 +1,6 @@
 import fs from 'fs';
 import Papa from 'papaparse';
-import { convertCurrencyStringToNumber } from "./utils";
+import { convertCurrencyStringToNumber } from "../utils/utils";
 
 const inputFile = 'wechat.csv';
 const outputFile = 'wechatout.csv';
