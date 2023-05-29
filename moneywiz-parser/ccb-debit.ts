@@ -40,7 +40,7 @@ function transformCSV(inputFile: string, outputFile: string): void {
     });
   });
 }
-const inputFile = "ccb.csv";
-const outputFile = "output.csv"
+const inputFile = "./mock/debit.csv";
+const outputFile = "ccb.csv"
 
 transformCSV(inputFile, outputFile);

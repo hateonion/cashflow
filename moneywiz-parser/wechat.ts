@@ -2,7 +2,7 @@ import fs from 'fs';
 import Papa from 'papaparse';
 import { convertCurrencyStringToNumber } from "../utils/utils";
 
-const inputFile = 'wechat.csv';
+const inputFile = './mock/wechat.csv';
 const outputFile = 'wechatout.csv';
 
 interface InputRow {

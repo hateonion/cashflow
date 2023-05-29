@@ -11,7 +11,7 @@ interface DataRow {
 }
 
 // The CSV file path to parse and process
-const csvFilePath: string = "source.csv";
+const csvFilePath: string = "mock/alipay.csv";
 
 // Read the CSV file content
 fs.readFile(csvFilePath, "utf-8", (error: NodeJS.ErrnoException | null, data: string) => {
@@ -51,7 +51,7 @@ fs.readFile(csvFilePath, "utf-8", (error: NodeJS.ErrnoException | null, data: st
   const mappedCsv = Papa.unparse(filteredData);
 
   // 将处理后的数据写入新的CSV文件
-  fs.writeFile("mapped.csv", mappedCsv, (error) => {
+  fs.writeFile("alipay.csv", mappedCsv, (error) => {
     if (error) {
       console.error("Error writing the mapped csv file:", error.message);
       return;
