@@ -17,7 +17,6 @@ interface InputRow {
 
 interface OutputRow {
   Date: string;
-  Category: string;
   Description: string;
   Amount: number;
   Account: string;
@@ -34,15 +33,14 @@ fs.readFile(inputFile, 'utf8', (err: NodeJS.ErrnoException | null, inputCsvData:
   // Parse input CSV data
   Papa.parse<InputRow>(inputCsvData, {
     header: true,
-    complete: (results) => {
+    complete: async (results) => {
       const inputRows: InputRow[] = results.data;
       const outputRows: OutputRow[] = [];
 
-      inputRows.forEach((row: InputRow) => {
+      const tasks = inputRows.map(async (row: InputRow) => {
         // Create new mapping object
         const newRow: OutputRow = {
           Date: row['交易时间'],
-          Category: row['交易类型'],
           Description: row['商品'],
           Amount: row['收/支'] === '收入' ? convertCurrencyStringToNumber(row['金额(元)']) : -convertCurrencyStringToNumber(row['金额(元)']),
           Account: row['支付方式'],
@@ -50,11 +48,12 @@ fs.readFile(inputFile, 'utf8', (err: NodeJS.ErrnoException | null, inputCsvData:
         };
 
         // Add new row to output array
-        outputRows.push(newRow);
+        return newRow;
       });
+      const result = await Promise.all(tasks);
 
       // Convert output data back to CSV
-      const outputCsvData: string = Papa.unparse(outputRows, { header: true });
+      const outputCsvData: string = Papa.unparse(result, { header: true });
 
       // Write new CSV data to output file
       fs.writeFile(outputFile, outputCsvData, 'utf8', (err: NodeJS.ErrnoException | null) => {

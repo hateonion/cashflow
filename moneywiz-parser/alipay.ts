@@ -14,7 +14,7 @@ interface DataRow {
 const csvFilePath: string = "mock/alipay.csv";
 
 // Read the CSV file content
-fs.readFile(csvFilePath, "utf-8", (error: NodeJS.ErrnoException | null, data: string) => {
+fs.readFile(csvFilePath, "utf-8", async (error: NodeJS.ErrnoException | null, data: string) => {
   if (error) {
     console.error("Error reading the csv file:", error.message);
     return;
@@ -27,26 +27,27 @@ fs.readFile(csvFilePath, "utf-8", (error: NodeJS.ErrnoException | null, data: st
   });
 
   // 过滤掉交易状态为'交易关闭'的条目，并进行映射
-  const filteredData = parsedData.data
+  const tasks = parsedData.data
     .filter((row) => row["交易状态"] !== "交易关闭")
-    .map((row) => {
+    .map(async (row) => {
       const amount =
         row["收/支"] === "收入"
           ? parseFloat(row["金额"])
           : row["收/支"] === "支出"
           ? -parseFloat(row["金额"])
           : parseFloat(row["金额"]);
+      
 
       return {
         Date: row["交易时间"],
-        Category: row["交易分类"],
         Description: row["商品说明"],
         Amount: amount,
         Account: row["收/付款方式"],
         Notes: row["交易对方"],
       };
     });
-
+  
+  const filteredData = await Promise.all(tasks);
   // 将处理后的数据转换回CSV格式
   const mappedCsv = Papa.unparse(filteredData);
 

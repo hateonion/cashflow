@@ -32,33 +32,29 @@ const processCsv = (inputFilePath: string, outputFilePath: string) => {
   const fileContent = fs.readFileSync(inputFilePath, 'utf8');
   const parseResult = Papa.parse<OldCsvRow>(fileContent, { header: true, skipEmptyLines: true });
 
-  const newCsvRows: NewCsvRow[] = parseResult.data
-    .filter(row => row.金额 !== '')
-    .map(row => {
-      const amount = (convertCurrencyStringToNumber(row.金额));
+  const newCsvRows: any[] = parseResult.data
+    .filter((row) => row.金额 !== "")
+    .map((row) => {
+      const amount = convertCurrencyStringToNumber(row.金额);
 
-      const sceneName = row.标签.includes('wedding') ? 'Wedding' :  '日常';
-      const transactionType = amount < 0 ? '支出' : '收入';
-      const primaryCategory = row.分类.match(/^(.*?) ▶︎ /)?.[1] ?? (row.分类 || '转账');
-      const secondaryCategory = row.分类.match(/ ▶︎ (.*)$/)?.[1] ?? '';
+      const sceneName = row.标签.includes("wedding") ? "Wedding" : "日常";
+      const transactionType = amount < 0 ? "支出" : "收入";
+      const primaryCategory =
+        row.分类.match(/^(.*?) ▶︎ /)?.[1] ?? (row.分类 || "转账");
+      const secondaryCategory = row.分类.match(/ ▶︎ (.*)$/)?.[1] ?? "";
 
       const transactionDate = row.日期;
       const remark = row.转账
         ? `转账-${row.账户}-${row.转账}--${amount}`
-        : `描述: ${row.描述} --- 标签: ${row.标签} --- ${row.备注}`;
+        : `${row.描述} ${row.备注}`;
 
       return {
-        "Scene Name": sceneName,
-        "Account Name": row.账户,
-        "Transaction Type": transactionType,
-        "Primary Category": primaryCategory,
-        "Secondary Category": secondaryCategory,
-        "Tertiary Category": "",
-        Amount: Math.abs(amount).toString(),
-        "Transaction Time": transactionDate,
-        Remark: remark,
+        Completion:
+          secondaryCategory !== "" ? secondaryCategory : primaryCategory,
+        Prompt: remark,
       };
-    });
+    })
+    .filter((row) => row["Completion"] !== "转账");
 
   const newCsvContent = Papa.unparse(newCsvRows);
   fs.writeFileSync(outputFilePath, newCsvContent, 'utf8');

@@ -10,8 +10,14 @@ function transformCSV(inputFile: string, outputFile: string): void {
 
     Papa.parse(data, {
       header: true,
-      complete: (results) => {
-        const transformedData = results.data.map((row: any) => {
+      complete: async (results) => {
+        const tasks = results.data
+          // .filter(
+          //   (transaction: any) =>
+          //     !transaction["交易地点/附言"].includes("财付通") &&
+          //     !transaction["交易地点/附言"].includes("支付宝")
+          // )
+        .map(async (row: any) => {
           const date = row["交易日期"];
           const formattedDate = `${date.slice(0, 4)}/${date.slice(
             4,
@@ -28,6 +34,7 @@ function transformCSV(inputFile: string, outputFile: string): void {
             Notes: row["对方账号与户名"],
           };
         });
+        const transformedData = await Promise.all(tasks)
 
         const csv = Papa.unparse(transformedData);
 
@@ -40,7 +47,7 @@ function transformCSV(inputFile: string, outputFile: string): void {
     });
   });
 }
-const inputFile = "./mock/debit.csv";
-const outputFile = "ccb.csv"
+const inputFile = "./mock/ccb-debit.csv";
+const outputFile = "ccb-debit.csv"
 
 transformCSV(inputFile, outputFile);
